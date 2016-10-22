@@ -1,3 +1,0 @@
-cd C:\Automation_projects\MakeMyTrip
-pause
-ant -v -buildfile reportng-build.xml Makemytrip

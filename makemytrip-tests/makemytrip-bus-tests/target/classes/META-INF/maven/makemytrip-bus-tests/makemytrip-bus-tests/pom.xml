@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>makemytrip-tests</groupId>
+    <artifactId>makemytrip-tests</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>makemytrip-bus-tests</groupId>
+  <artifactId>makemytrip-bus-tests</artifactId>
+  <name>makemytrip-bus-tests</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>makemytrip-application-library</groupId>
+  		<artifactId>makemytrip-application-common-library</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>makemytrip-application-buses-library</groupId>
+  		<artifactId>makemytrip-application-buses-library</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+</project>
