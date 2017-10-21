@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Regression" parallel="none" verbose="3" preserve-order="true">
+	
+  <parameter name="selenium.host" value="localhost" />
+  <parameter name="selenium.port" value="3737" />
+  <parameter name="selenium.browser" value="*firefox" />
+  <parameter name="selenium.url" value="http://www.makemytrip.com" />
+  <parameter name="selenium.email" value="abc@abc.com" />
+  <parameter name="selenium.pass" value="http://www.gmail.com" />
+
+  <listeners>
+      <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+      <listener class-name="org.uncommons.reportng.JUnitXMLReporter" />
+      <listener class-name="reporter.CustomReporter" />
+  </listeners>
+  
+  <test name="Test" preserve-order="true">
+    <classes>
+	
+      <class name="tests.UseLogger" >
+        <methods>
+          <include name="test1" />
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>

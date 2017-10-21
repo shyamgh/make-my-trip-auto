@@ -1,0 +1,6 @@
+package utils;
+
+public class SystemWaits {
+	public static final int NORMAL_WAIT = 5;
+	public static final int STANDARD_WAIT = 10;
+}

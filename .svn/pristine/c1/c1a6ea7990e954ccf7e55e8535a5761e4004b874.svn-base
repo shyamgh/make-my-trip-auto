@@ -1,0 +1,136 @@
+import java.util.logging.Level;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.How;
+import org.openqa.selenium.support.PageFactory;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.asserts.SoftAssert;
+
+
+public class LoginPage {
+
+	private final WebDriver driver;
+	private SoftAssert softassert;
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+        softassert = new SoftAssert();
+        // Check that we're on the right page.
+        if (!"Gmail".equals(driver.getTitle())) {
+            // Alternatively, we could navigate to the login page, perhaps logging out first
+            throw new IllegalStateException("This is not the login page");
+        }
+    }
+
+    // The login page contains several HTML elements that will be represented as WebElements.
+    // The locators for these elements should only be defined once.
+    @FindBy(xpath = "//input[@id='Email' and @type='email']") WebElement userid;
+	    /*@FindBy(xpath = "//input[@id='Email']") WebElement userid;
+	    @FindBy(id="Email") public WebElement userid;
+	    @FindBy(how = How.ID ,using = "Email") public WebElement userid;
+	    By emailLocator = By.id("Email");
+	    By passwordLocator = By.id("Passwd");
+	    By loginButtonLocator = By.id("signIn");*/
+    @FindBy(xpath = "//input[@id='Passwd' and @type='password']") WebElement passwd;
+    @FindBy(xpath = "//input[@id='signIn' and @type='submit']") WebElement signIn;
+    @FindBy(xpath = "//input[@id='PersistentCookie' and @type='checkbox']") WebElement staySignedin;
+
+    /*public WebElement getUserid()
+    {
+    	return this.userid;
+    }*/
+    
+    public void verifyemaildisplayed()
+    {
+    	softassert.assertEquals(userid.isDisplayed(), true);
+    	//System.out.println(driver.findElement(emailLocator).isDisplayed());
+    }
+    public void verifyLoginError()
+    {
+    	//WebElement loginError = driver.findElement(By.id("errormsg_0_Passwd"));
+    	/*try {
+    		if (!new GenericFunctions(driver).WaitForErrorObject("errormsg_0_Passwd", 5))
+    			Reporter.log("Login successful");
+    	} catch (Exception e) {
+				try {
+					throw new Exception("Invalid user or password error is displayed");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		}*/
+    	new GenericFunctions(driver).WaitForErrorObject("errormsg_0_Passwd", 5);
+
+    }
+    // The login page allows the user to type their email into the email field
+    public LoginPage typeEmail(String email) {
+        // This is the only place that "knows" how to enter a email
+        //driver.findElement(emailLocator).sendKeys(email);
+    	userid.sendKeys(email);
+    	Reporter.log("Entered user email");
+    	
+        // Return the current page object as this action doesn't navigate to a page represented by another PageObject
+        return this;    
+    }
+
+    // The login page allows the user to type their password into the password field
+    public LoginPage typePassword(String password) {
+        // This is the only place that "knows" how to enter a password
+        //driver.findElement(passwordLocator).sendKeys(password);
+    	passwd.sendKeys(password);
+    	Reporter.log("Entered password");
+
+
+        // Return the current page object as this action doesn't navigate to a page represented by another PageObject
+        return this;    
+    }
+
+    // The login page allows the user to submit the login form
+    public HomePage submitLogin() {
+        // This is the only place that submits the login form and expects the destination to be the home page.
+        // A seperate method should be created for the instance of clicking login whilst expecting a login failure. 
+        //driver.findElement(loginButtonLocator).submit();
+    	
+    	//Uncheck the stay sign in check box
+    	if(staySignedin.isSelected()) {
+    		staySignedin.click();
+    		Reporter.log("'Stay Sign in' check box is in selected state so unchecking it");
+    	}
+    	else
+    		Reporter.log("'Stay Sign in' check box is not selected, so skiping uncheck action");
+    	signIn.submit();
+    	
+    	Reporter.log("Clicked sign in");
+
+        // Return a new page object representing the destination. Should the login page ever
+        // go somewhere else (for example, a legal disclaimer) then changing the method signature
+        // for this method will mean that all tests that rely on this behaviour won't compile.
+        return new HomePage(driver);
+    }
+
+    // The login page allows the user to submit the login form knowing that an invalid email and / or password were entered
+    public LoginPage submitLoginExpectingFailure() {
+        // This is the only place that submits the login form and expects the destination to be the login page due to login failure.
+        //driver.findElement(loginButtonLocator).submit();
+    	signIn.submit();
+    	Reporter.log("Clicked sign in");
+
+        // Return a new page object representing the destination. Should the user ever be navigated to the home page after submiting a login with credentials 
+        // expected to fail login, the script will fail when it attempts to instantiate the LoginPage PageObject.
+        return new LoginPage(driver);   
+    }
+
+    // Conceptually, the login page offers the user the service of being able to "log into"
+    // the application using a user name and password. 
+    public HomePage loginAs(String email, String password) {
+        // The PageObject methods that enter email, password & submit login have already defined and should not be repeated here.
+        typeEmail(email);
+        typePassword(password);
+        return submitLogin();
+    }
+}

@@ -1,0 +1,20 @@
+package utils;
+
+import java.io.IOException;
+
+public class EnvironmentVariables {
+	public static final String rubyPath = "C:\\Ruby192\\bin\\";
+	public static String projectPath = "";
+	static {
+		try {
+			projectPath = new java.io.File( "." ).getCanonicalPath();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static String sciptsPath = projectPath+"\\scripts";
+	public static String utilsPath = projectPath+"\\utils";
+	public static String confPath = projectPath+"\\conf";
+	public static String testssath = projectPath+"\\tests";
+}

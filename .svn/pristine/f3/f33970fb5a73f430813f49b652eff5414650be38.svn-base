@@ -1,0 +1,205 @@
+package pages;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import logger.CustomLogger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.testng.Assert;
+import org.testng.log4testng.Logger;
+
+import utils.EnvironmentVariables;
+import utils.GenericFunctions;
+
+
+public class BusTicketBookingPage {
+
+	private final WebDriver driver;
+	private static final Properties locatorProps;
+	private GenericFunctions genFun;
+	static Logger log4j = Logger.getLogger(BusTicketBookingPage.class.getClass());
+	private WebElement departureCity;
+    private WebElement destinationCity;
+    private WebElement email;
+    static By byDepartureCity;
+    static By byDestinationCity;
+    static By byEmail;
+    
+    public BusTicketBookingPage(WebDriver driver) {
+        this.driver = driver;
+        genFun = new GenericFunctions(this.driver);
+
+        /*// Check that we're on the right page.
+        if (!"MakeMyTrip".equals(driver.getTitle())) {
+            // Alternatively, we could navigate to the login page, perhaps logging out first
+            throw new IllegalStateException("This is not the home page");
+        }*/
+    }
+    
+    static {
+    	locatorProps = GenericFunctions.loadPropertiesFromThisFile(EnvironmentVariables.confPath+"\\locators.properties");
+    	initPageObject();
+    }
+    
+    /**
+     * This method is used to set by object for this page
+     * @author shyam
+     */
+    public static void initPageObject()
+    {
+        byDepartureCity = By.xpath(locatorProps.getProperty("busticketbooking.departureCity.txt"));
+        byDestinationCity = By.xpath(locatorProps.getProperty("busticketbooking.destinationCity.txt"));
+        byEmail = By.name(locatorProps.getProperty("busticketbooking.email.txt"));
+    }
+/*    @FindBy(xpath = "//div[@class='carousel-li']/div[2]/div/div[1]/div[2]/span/input") WebElement departureCity;
+    @FindBy(xpath = "//div[@class='carousel-li']/div[2]/div/div[1]/div[3]/span/input") WebElement destinationCity;
+    @FindBy(name = "email") WebElement email;*/
+    
+    /**
+     * This method find the given tab and click
+     * @param tabName
+     * @return BusTicketBookingPage
+     * @author shyam
+     */
+	public BusTicketBookingPage ClickThisPageLink(String tabName)
+	{
+		CustomLogger.logMethodStart();
+		Assert.assertTrue(driver.findElement(By.linkText(tabName)).isDisplayed(), "Verify if the tab ["+tabName+"] is displayed"); 
+		driver.findElement(By.linkText(tabName)).click();
+		CustomLogger.logMethodEnd();
+		return this;
+	}
+	
+	/**
+	 * This method is used to verify if the given widget tab is displayed
+	 * @param tabName
+	 * @return widget tab web element
+	 * @author shyam
+	 */
+	public WebElement getThisWidgetTab(String tabName)
+	{
+		CustomLogger.logMethodStart();
+		Assert.assertTrue(driver.findElement(By.xpath("//div[@class='widget_tabs_info']//span[.='"+tabName+"']")).isDisplayed(), "Verify widget tab ["+tabName+"] is displayed");
+		CustomLogger.logMethodEnd();
+		return driver.findElement(By.xpath("//div[@class='widget_tabs_info']//span[.='"+tabName+"']"));
+	}
+	
+	/**
+	 * This method is used to click given widget tab
+	 * @param tabName
+	 * @author shyam
+	 */
+	public BusTicketBookingPage ClickThisWidgetTab(String tabName)
+	{
+		CustomLogger.logMethodStart();
+		WebElement tab = getThisWidgetTab(tabName);
+		tab.click();
+		CustomLogger.logMethodEnd();
+		return this;
+       // driver.findElement(By.cssSelector("#trip_type > label")).click();
+       // driver.findElement(By.id("trip_type_oneway")).click();
+	}
+	
+	/**
+	 * This method is used to enter departure and destination cities for searching bus
+	 * @param depCity
+	 * @param destCity
+	 * @author shyam
+	 */
+	public BusTicketBookingPage SelectToAndFrom(String depCity, String destCity)
+	{
+		CustomLogger.logMethodStart();
+		
+		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		//Assert.assertTrue(genFun.verifyElementPresent(departureCity), "Verify departure city text box is displayed");
+		//departureCity.sendKeys(depCity);
+		Assert.assertTrue(genFun.verifyElementPresent(byDepartureCity), "Verify departure city text box is displayed");
+		departureCity = driver.findElement(byDepartureCity);
+		departureCity.sendKeys(depCity);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		departureCity.sendKeys(Keys.ARROW_DOWN);
+		departureCity.sendKeys(Keys.ENTER);
+		
+		//Assert.assertTrue(genFun.verifyElementPresent(destinationCity), "Verify departure city text box is displayed");
+		//destinationCity.sendKeys(destCity);
+		Assert.assertTrue(genFun.verifyElementPresent(byDestinationCity), "Verify destination city text box is displayed");
+		destinationCity = driver.findElement(byDestinationCity);
+		destinationCity.sendKeys(destCity);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		destinationCity.sendKeys(Keys.ARROW_DOWN);
+		destinationCity.sendKeys(Keys.ENTER);
+		
+		CustomLogger.logMethodEnd();
+		return this;
+	}
+	
+	/**
+	 * This function is used to select date of journey
+	 * @author shyam
+	 * @param
+	 */
+	public BusTicketBookingPage SelectDateOfJourney()
+	{
+		CustomLogger.logMethodStart();
+		driver.findElement(By.linkText("07Mar'14(Fri)")).click();
+        driver.findElement(By.linkText("8")).click();
+        CustomLogger.logMethodEnd();
+        return this;
+	}
+    
+	/**
+	 * This method is used to enter email of user
+	 * @author shyam
+	 * @param email
+	 * @return BusTicketBookingPage
+	 */
+	public BusTicketBookingPage EnterEmail(String eml)
+	{
+		CustomLogger.logMethodStart();
+		Assert.assertTrue(genFun.verifyElementPresent(byEmail), "Verify email text box is displayed");
+		email = driver.findElement(byEmail);
+        email.sendKeys(eml);
+        CustomLogger.logMethodEnd();
+        return this;
+	}   
+
+	/**
+	 * This function submit and initiates bus search
+	 * @author shyam 
+	 */
+	public void SubmitSearch()
+	{
+		CustomLogger.logMethodStart();
+		driver.findElement(By.name("submit_name")).click();
+		CustomLogger.logMethodEnd();
+	}
+ 
+	/**
+     * This method clicks confirmation popup window after search bus submitted 
+     */
+	public void HandleSpecialSearchPopup()
+	{
+		CustomLogger.logMethodStart();
+        driver.findElement(By.xpath("//div[@id='popBusSearch']//button[normalize-space(.)='Search Bus']")).click();
+        log4j.info("***		search bus buttone clicked");
+        /*new Actions(wd).doubleClick(wd.findElement(By.xpath("//div[@id='content']/div[5]/div[2]/div"))).build().perform();
+        wd.findElement(By.cssSelector("div.ng-scope")).click();*/
+        driver.findElement(By.linkText("Select Bus")).click();
+        driver.findElement(By.cssSelector("a.close_popup")).click();
+        log4j.info("***		popup closed");
+        CustomLogger.logMethodEnd();
+	}   
+
+}

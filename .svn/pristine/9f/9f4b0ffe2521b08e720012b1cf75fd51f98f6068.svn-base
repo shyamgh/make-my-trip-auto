@@ -1,0 +1,50 @@
+package tests;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
+
+import utils.EnvironmentVariables;
+import utils.GenericFunctions;
+import utils.RemoteCommandExec;
+
+public class RawTestClass {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		/*String cmd = "ls -ltr";
+		try {
+			ArrayList output = new RemoteCommandExec().ExecuteCmdOnThisHost("localhost", "user", "pwd", cmd);
+			Iterator<String> itr = output.iterator();
+		    while(itr.hasNext()){
+		        System.out.println(itr.next());
+		    }
+		    String srchString = "exiteed";
+		    Assert.assertTrue(GenericFunctions.searchThisArrayList(output, srchString), "Verify remote command output contains '"+srchString+"'");    
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		//System.out.println(EnvironmentVariables.configData.get("serverip1"));
+		
+		WebDriver wd = new FirefoxDriver();
+		new TestClassTest().BusSearchTest();
+		//Assert.assertTrue(wd.findElement(By.xpath("//div[@id='popBusSearch']//button[normalize-space(.)='Search Bus']")).isDisplayed());
+		wd.close();
+		wd.quit();
+		
+		//sconst int i =10;
+		
+
+	}
+
+}

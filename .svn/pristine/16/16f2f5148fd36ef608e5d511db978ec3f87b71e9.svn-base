@@ -1,0 +1,22 @@
+package logger;
+
+import org.testng.Reporter;
+
+public class CustomLogger {
+	public static void logMethodStart() {
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement e = stacktrace[2];
+		String methodName = e.getMethodName();
+		String logMsg ="*** Entering into "+methodName+"..."; 
+		Reporter.log(logMsg);
+		System.out.println(logMsg);
+	}
+	public static void logMethodEnd() {
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement e = stacktrace[2];
+		String methodName = e.getMethodName();
+		String logMsg ="*** Exiting from "+methodName+"...";
+		Reporter.log(logMsg);
+		System.out.println(logMsg);
+	}
+}

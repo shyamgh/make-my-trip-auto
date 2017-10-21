@@ -1,0 +1,77 @@
+package utils;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+public class EnvironmentVariables {
+	public static final String configFileName = "config.properties";
+	public static final String rubyPath = "C:\\Ruby192\\bin\\";
+	public static String projectPath = "";
+	static {
+		try {
+			projectPath = new java.io.File( "." ).getCanonicalPath();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static String sciptsPath = projectPath+"\\scripts";
+	public static String utilsPath = projectPath+"\\utils";
+	public static String confPath = projectPath+"\\conf";
+	public static String testsPath = projectPath+"\\tests";
+	
+	public static Map <String, String> configData = new HashMap<String, String>();
+	static {	//This block builds Map from the properties file
+		buildStoredData();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public static void buildStoredData()
+	{
+		/*Properties prop = new Properties();
+		InputStream input = null;
+	 
+		try {
+			
+			input = new FileInputStream(EnvironmentVariables.confPath+"\\"+EnvironmentVariables.configFileName);
+	 
+			// load a properties file
+			prop.load(input);*/
+		Properties prop = GenericFunctions.loadPropertiesFromThisFile(EnvironmentVariables.confPath+"\\"+EnvironmentVariables.configFileName);
+		Set<Map.Entry<Object, Object>> entrySet = prop.entrySet();
+		Iterator<Map.Entry<Object, Object>> i = entrySet.iterator();
+	    while(i.hasNext()){
+	        Map.Entry<Object, Object> element = i.next();
+	        configData.put(""+element.getKey(), ""+element.getValue());
+	    }
+	 
+	    /*} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}*/
+	}
+}

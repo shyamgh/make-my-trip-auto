@@ -1,0 +1,242 @@
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.*;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.ITestContext;
+import org.testng.Reporter;
+import org.testng.asserts.SoftAssert;
+import org.testng.asserts.LoggingAssert;
+
+
+
+public class GenericFunctions {
+	private final WebDriver driver;
+	private ITestContext context;
+	private SoftAssert softassert;
+	private LoggingAssert lassert;
+	
+	public GenericFunctions(WebDriver driver){
+		this.driver = driver;
+		softassert = new SoftAssert();
+	}
+	public GenericFunctions(WebDriver driver, ITestContext context){
+		this.driver = driver;
+		this.context = context;
+		softassert = new SoftAssert();
+		lassert = new LoggingAssert();
+	}
+	
+	/**
+	 * 
+	 * This will open the given URL
+	 * 
+	 * @param url
+	 * @author shyam
+	 * 
+	 */
+	public void OpenThisUrl(String url)
+	{
+		Reporter.log("Opening url "+url);
+		driver.get(url);
+	}
+	
+	/**
+	 * This function closes and quits the driver
+	 * @author Shyam
+	 */
+	public void CloseBrowser() {
+		Reporter.log("Closing the browser and driver instance");
+		driver.close();
+		driver.quit();
+	}
+	
+	
+	public void WaitTillPageLoad(String vText)
+	/**
+	 * This function waits for page to load by verifying the given text in page title
+	 * @param vText:text to be verify for ensure correct page opened
+	 * @author shyam
+	 * 
+	 */
+	{	
+		final String verifyText = vText; 
+		Reporter.log("Wait till page to load");
+		try {
+	       (new WebDriverWait(driver, SystemWaits.STANDARD_WAIT)).until(new ExpectedCondition<Boolean>() {
+	           public Boolean apply(WebDriver d) {
+	        	   return d.getTitle().startsWith(verifyText);
+	          }
+	       });
+	       Reporter.log("Text '"+verifyText+"' found in page title. Page loaded.");
+		} catch (Exception e) {
+			Reporter.log("FAIL: Wait for page to load, Exception while waiting for page to laod, Searched page title '"+verifyText+"'. "+e.getMessage());
+			
+		}
+	}
+	
+	public String GetSystemParameter(String paramName)
+	/**
+	 * This function reads testng.xml parameter with given name
+	 * @param paramName
+	 * @author shyam
+	 * 
+	 */
+	{
+		return context.getCurrentXmlTest().getParameter(paramName);
+	}
+	
+	public boolean WaitForObject(WebElement webEle) throws WebElementNotFound
+	/**
+	 * This function waits for the given object to appear on UI
+	 * @param webEle
+	 * @author shyam
+	 * @return boolean
+	 * 
+	 */
+	{
+		boolean found = false;
+		for(int i=0;i<SystemWaits.STANDARD_WAIT;i++)
+		{
+			if (webEle.isDisplayed()) {
+				Reporter.log("Web element "+webEle.toString()+ " displayed");
+				break;				
+			}
+		}
+		if (!found) {
+			throw new WebElementNotFound("Web element "+webEle.toString()+ " displayed");
+		} else
+			return true;
+	}
+	
+	public boolean WaitForObject(WebElement webEle, int timeout) throws WebElementNotFound
+	/**
+	 * This function waits for the given object to appear on UI
+	 * @param webEle, timeout
+	 * @return boolean
+	 * @author shyam
+	 * 
+	 */
+	{
+		boolean found = false;
+		driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+		for(int i=0;i<timeout;i++)
+		{
+			try {
+				if (webEle.isDisplayed()) {
+					Reporter.log("Web element "+webEle.toString()+ " is displayed");
+					found = true;
+					break;				
+				}
+			} catch (NoSuchElementException ne) {
+				//
+			}
+			
+		}
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+		if (!found) {
+			throw new WebElementNotFound("Web element not displayed");
+		} else
+			return true;
+	}
+	
+	public boolean WaitForErrorObject(String erID, int timeout)
+	/**
+	 * This function waits for the given error object to appear on UI, thows exception if error appears
+	 * @param webErr, timeout
+	 * @return boolean
+	 * @author shyam
+	 * 
+	 */
+	{
+		WebElement webErr = driver.findElement(By.id(erID));
+		driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
+		System.out.println(webErr.isDisplayed());
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		softassert.assertEquals(!(webErr.isDisplayed()), true, "Verify if errro not displayed");
+		//lassert.assertEquals(!(webErr.isDisplayed()), true, "Verify if errro not displayed");
+		//assert !(webErr.isDisplayed()) : "Verify if errror not displayed";
+		if (webErr.isDisplayed())
+			assert false : "Verify if errror not displayed \n";
+		else
+			Reporter.log("Login successful \n");
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		return false;
+	}
+	
+
+	public static void LogError(String errorMsg)
+	/**
+	 * This function will log the error message in the test report, it will be exception
+	 * @param errorMsg
+	 * @author shyam
+	 * @return none 
+	 */
+	{
+		Throwable t = new Throwable(new Exception(errorMsg));
+		Reporter.getCurrentTestResult().setThrowable(t);
+		
+	}
+	public static void LogError(Exception except)
+	/**
+	 * This function will log the given exception in the test report
+	 * @param except
+	 * @author shyam
+	 * @return none 
+	 */
+	{
+		Throwable t = new Throwable(except);
+		Reporter.getCurrentTestResult().setThrowable(t);
+	}
+	
+/*	public void FindElement(WebDriver driver, By by, int timeout)
+	{
+		 // Tell webdriver to wait
+		WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(4));
+		 
+		// Test the autocomplete response - Explicit Wait
+		IWebElement autocomplete = wait.Until(x => x.FindElement(By.ClassName("ac-row-110457")));
+		 
+	}*/
+}
+
+
+class WebElementNotFound extends Exception
+{
+	private static final long serialVersionUID = 3461899582505930473L;
+	private String message = null;
+ 
+    public WebElementNotFound() {
+        super();
+    }
+ 
+    public WebElementNotFound(String message) {
+        super(message);
+        this.message = message;
+    }
+ 
+    public WebElementNotFound(Throwable cause) {
+        super(cause);
+    }
+ 
+    @Override
+    public String toString() {
+        return message;
+    }
+ 
+    @Override
+    public String getMessage() {
+        return message;
+    }
+}
+

@@ -1,0 +1,213 @@
+package tests;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import logger.CustomLogger;
+
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
+import org.testng.ITestContext;
+import org.testng.Reporter;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+
+import reporter.CustomReporter;
+
+import com.logger.MyLogger;
+
+import utils.EnvironmentVariables;
+import utils.GenericFunctions;
+import utils.RemoteCommandExec;
+import utils.SystemWaits;
+
+public class RawTestClass {
+
+	private GenericFunctions genFunct;
+	WebDriver driver;
+	private ITestContext context;
+	private static final Logger LOG = MyLogger.getLogger();
+	private final static Map ENVIRONMENT_VARS = EnvironmentVariables.getEnvironmentVars();
+
+	
+	@BeforeClass
+	public void setUP(ITestContext context)	{
+		CustomLogger.logMessage(null,"INIT","Initializing Selenium Firefox driver...",1);
+		driver = new FirefoxDriver();
+		driver.manage().timeouts().implicitlyWait(SystemWaits.STANDARD_WAIT*5, TimeUnit.SECONDS);
+		this.context = context;		
+		genFunct = new GenericFunctions(driver, this.context);
+		CustomLogger.logMessage(null,"","Driver initiated",1);
+		EnvironmentVariables.getEnvironmentVars().put("driver", driver);
+	}
+	@AfterClass
+	public void tearDown()
+	{
+		CustomLogger.logMessage(null,"","Closing Driver instance",1);
+		genFunct.CloseBrowser();
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		/*String cmd = "ls -ltr";
+		try {
+			ArrayList output = new RemoteCommandExec().ExecuteCmdOnThisHost("localhost", "user", "pwd", cmd);
+			Iterator<String> itr = output.iterator();
+		    while(itr.hasNext()){
+		        System.out.println(itr.next());
+		    }
+		    String srchString = "exiteed";
+		    Assert.assertTrue(GenericFunctions.searchThisArrayList(output, srchString), "Verify remote command output contains '"+srchString+"'");    
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		//System.out.println(EnvironmentVariables.configData.get("serverip1"));
+		
+		WebDriver wd = new FirefoxDriver();
+		wd.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		wd.manage().window().maximize();
+		wd.navigate().to("https://www.google.com");
+		CustomLogger.logMessage(Level.SEVERE, "Sample failed step1", "This is failed step", 1);
+		/*new TestClassTest().BusSearchTest();
+		//Assert.assertTrue(wd.findElement(By.xpath("//div[@id='popBusSearch']//button[normalize-space(.)='Search Bus']")).isDisplayed());
+		wd.close();
+		wd.quit();*/
+		//new GenericFunctions(wd).takeScreenShot("Sample step");
+
+	}
+	
+	private static void m1()
+	{
+		logMethodStart();
+	}
+	
+	public static void logMethodStart() {
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		
+		StackTraceElement e1 = stacktrace[1];
+		String methodName = e1.getMethodName();
+		String logMsg ="*** Entering into "+methodName+"..."; 
+		System.out.println(logMsg);
+		
+		StackTraceElement e2 = stacktrace[2];
+		methodName = e2.getMethodName();
+		logMsg ="*** Entering into "+methodName+"..."; 
+		System.out.println(logMsg);
+		
+		StackTraceElement e3 = stacktrace[3];
+		methodName = e3.getMethodName();
+		logMsg ="*** Entering into "+methodName+"..."; 
+		System.out.println(logMsg);
+		
+	}
+
+	@Test
+	public void test1()
+	{
+		CustomLogger.setStep_Msg("Step 1", "Login to application");
+		CustomLogger.logMessage(null, 1);
+		printStep_Msg();
+		CustomLogger.setStep_Msg("Step 2", "Open DM page");
+		CustomLogger.logMessage(Level.SEVERE, 1);
+		printStep_Msg();
+		CustomLogger.removeStep_Msg();
+		printStep_Msg();
+	}
+
+	
+	@Test
+	public void RegisterDeviceTest()
+	{
+		String msg = "";
+		String step ="Start -- test1";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		
+		step = "Step 1 : Log in to the DCC UI";
+		msg = "Log in to the DCC UI with valid credentials";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		String url = genFunct.GetSystemParameter("selenium.url");
+		genFunct.OpenThisUrl(url);
+		String verifyText = "MakeMyTrip";
+		genFunct.WaitTillPageLoad(verifyText);
+
+		step = "Step 2: Click tab";
+		msg = "Click the Register tab.";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		step = "";
+		msg = "Verify Device Manager screen is displayed.";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+
+		step = "Step 3: Enter a new Device ID";
+		msg = "Enter a new Device ID in the Select Device text box";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+
+		step = "Step 4: Click tab";
+		msg = "Click the Register tab.";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		step = "";
+		msg = "Verify Device Registration screen is displayed";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		step = ""; 
+		msg = "Verify Device ID is automatically populated in the Device Registration screen";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+
+		step = "Step 5: Select the area";
+		msg = "Select the area to be assigned to the device from the Area drop-down list";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		step = "";
+		msg = "Verify area is present";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+
+		step = "Step 6: Select the group";
+		msg = "Select the group name from the RF Profile drop-down list if required";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		step = "";
+		msg = "Verify group name is present";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+
+		step = "Step 7: Click Register";
+		msg = "";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		step = "";
+		msg = "Verify the successful message is displayed for valid device";
+		CustomLogger.logMessage(Level.INFO,step,msg,1);
+		
+		CustomLogger.logMessage(Level.INFO,"End -- test1","",1);
+	}
+	
+	
+	
+	/*public static void setStep_Msg(String step, String msg) {
+		Map ENVIRONMENT_VARS = EnvironmentVariables.getEnvironmentVars();
+		ENVIRONMENT_VARS.put("step", step);
+		ENVIRONMENT_VARS.put("msg", msg);
+	}
+	public static void removeStep_Msg() {
+		Map ENVIRONMENT_VARS = EnvironmentVariables.getEnvironmentVars();
+		ENVIRONMENT_VARS.remove("step");
+		ENVIRONMENT_VARS.remove("msg");
+	}*/
+	public void printStep_Msg()
+	{
+		Map ENVIRONMENT_VARS = EnvironmentVariables.getEnvironmentVars();
+		System.out.println(ENVIRONMENT_VARS.get("step") +" => "+ ENVIRONMENT_VARS.get("msg"));
+	}
+
+}

@@ -1,0 +1,62 @@
+import java.util.concurrent.TimeUnit;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.ITestContext;
+import org.testng.Reporter;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+
+public class TestClassTest {
+	//Variables
+	WebDriver driver;
+	private SoftAssert softassert;
+	private GenericFunctions genFunct;
+	private String verifyText = "";
+	private ITestContext context;
+	
+	@BeforeClass
+	public void setUP(ITestContext context)
+	{
+		driver = new FirefoxDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		this.context = context;		
+		genFunct = new GenericFunctions(driver, this.context);
+		Reporter.log("The Firefox driver is instantiated");
+		softassert = new SoftAssert();
+	}
+	@AfterClass
+	public void tearDown()
+	{
+		genFunct.CloseBrowser();
+	}
+	//@Parameters({ "selenium.url,selenium.email,selenium.pass" })
+	@Test(description="This is test")
+	public void Test1()
+	{
+		String url = genFunct.GetSystemParameter("selenium.url");
+		String email = genFunct.GetSystemParameter("selenium.email");
+		String pass = genFunct.GetSystemParameter("selenium.pass");	
+		genFunct.OpenThisUrl(url);
+		verifyText = "gmail";
+		genFunct.WaitTillPageLoad(verifyText);
+		LoginPage lp = new LoginPage(driver);
+		lp.verifyemaildisplayed();
+		lp.loginAs(email, pass);
+		lp.verifyLoginError();
+	}
+	
+	@Test(description="This is test1")
+	public void Test2()
+	{
+		Reporter.log("From test2");
+		String url = genFunct.GetSystemParameter("selenium.url");
+		genFunct.OpenThisUrl(url);
+		verifyText = "gmail";
+		genFunct.WaitTillPageLoad(verifyText);
+		LoginPage lp = new LoginPage(driver);
+		lp.verifyemaildisplayed();
+	}
+}

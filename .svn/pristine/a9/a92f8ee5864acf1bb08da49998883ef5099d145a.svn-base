@@ -1,0 +1,33 @@
+package logger;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.testng.Reporter;
+
+import utils.EnvironmentVariables;
+
+public class CustomLogger {
+	public static void logMethodStart() {
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement e = stacktrace[2];
+		String methodName = e.getMethodName();
+		String logMsg ="*** Entering into "+methodName+"..."; 
+		Reporter.log(logMsg);
+		System.out.println(logMsg);
+	}
+	public static void logMethodEnd() {
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement e = stacktrace[2];
+		String methodName = e.getMethodName();
+		String logMsg ="*** Exiting from "+methodName+"...";
+		Reporter.log(logMsg);
+		System.out.println(logMsg);
+	}
+	
+}

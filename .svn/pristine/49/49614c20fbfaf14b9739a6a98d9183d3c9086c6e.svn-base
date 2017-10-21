@@ -1,0 +1,44 @@
+import java.util.concurrent.TimeUnit;
+
+import junit.framework.TestResult;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+
+public class InitTestClass {
+	//Variables
+	WebDriver driver;
+	private SoftAssert softassert;
+	private GenericFunctions genFunct;
+	private String verifyText = "";
+	private ITestContext context;
+	
+	
+	@BeforeSuite(alwaysRun = true)
+	public void setupBeforeSuite(ITestContext context) {
+		/*driver = new FirefoxDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		this.context = context;		
+		genFunct = new GenericFunctions(driver, this.context);
+		Reporter.log("The Firefox driver is instantiated");
+		softassert = new SoftAssert();*/
+		Reporter.log("From setupBeforeSuite");
+	}
+	@AfterSuite(alwaysRun = true)
+	public void setupAfterSuite() {
+		//genFunct.CloseBrowser();
+		Reporter.log("From setupAfterSuite");
+	}
+
+}

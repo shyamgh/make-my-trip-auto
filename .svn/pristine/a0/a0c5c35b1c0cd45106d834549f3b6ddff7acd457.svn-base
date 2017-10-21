@@ -1,0 +1,305 @@
+package tests;
+import utils.EnvironmentVariables;
+import utils.RemoteCommandExec;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.Assert;
+import org.testng.ITestContext;
+import org.testng.Reporter;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+//import org.testng.log4testng.Logger;
+
+import static org.testng.Assert.*;
+
+import java.util.Date;
+import java.io.File;
+import java.io.IOException;
+
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.*;
+import static org.openqa.selenium.OutputType.*;
+import org.openqa.selenium.Keys;
+
+import com.logger.MyLogger;
+
+import pages.BusTicketBookingPage;
+import reporter.CustomReporter;
+import utils.GenericFunctions;
+
+import java.text.SimpleDateFormat;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+
+import logger.CustomLogger;
+
+public class TestClassTest {
+	//Variables
+	WebDriver wd;
+	private SoftAssert softassert;
+	private GenericFunctions genFunct;
+	private String verifyText = "";
+	private ITestContext context;
+	private static final Logger LOG1 = Logger.getLogger(TestClassTest.class.getName());
+	private static final Logger LOG = MyLogger.getLogger();
+	//private static Logger LOG;
+	static private SimpleFormatter formatterTxt;
+	private static FileHandler fh;
+	
+	/*static{
+		try {
+			fh = new FileHandler(EnvironmentVariables.PROJECT_PATH+"\\test-output\\testsexec.log");
+			// create txt Formatter
+		    formatterTxt = new SimpleFormatter();
+		    fh.setFormatter(formatterTxt);
+		    LOG.addHandler(fh);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}*/
+	/*@BeforeSuite(alwaysRun = true)
+	public void setupBeforeSuite() {
+		driver = new FirefoxDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		this.context = context;		
+		genFunct = new GenericFunctions(driver, this.context);
+		Reporter.log("The Firefox driver is instantiated");
+		softassert = new SoftAssert();
+		//Reporter.log("From setupBeforeSuite");
+	}
+	@AfterSuite(alwaysRun = true)
+	public void setupAfterSuite() {
+		//genFunct.CloseBrowser();
+		//Reporter.log("From setupAfterSuite");
+	}*/
+	@BeforeClass
+	public void setUP(ITestContext context)	{
+		String msg = "INIT :: Initializing Selenium Firefox driver...";
+		//CustomLogger.logMessage(LOG,"INIT","Initializing Selenium Firefox driver...",null, 1);
+		LOG.info(msg);
+		Reporter.log(msg.replace("::", "=>"));
+
+		wd = new FirefoxDriver();
+		wd.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+		this.context = context;		
+		genFunct = new GenericFunctions(wd, this.context);
+		softassert = new SoftAssert();
+
+		msg = "Driver initiated";
+		//CustomLogger.logMessage(LOG,"","Driver initiated",null, 1);
+		LOG.info(msg);
+		Reporter.log(msg.replace("::", "=>"));
+		/*try {
+			// create txt Formatter
+		    fh = new FileHandler(EnvironmentVariables.projectPath+"\\test-output\\testsexec.log");
+		    formatterTxt = new SimpleFormatter();
+		    fh.setFormatter(formatterTxt);
+			LOG.addHandler(fh);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+	}
+	@AfterClass
+	public void tearDown()
+	{
+		genFunct.CloseBrowser();
+	}
+
+	@Test(description="To Test home page loading within page load time")
+	public void LoadHomePageTest()
+	{
+		String url = genFunct.GetSystemParameter("selenium.url");
+		//CustomLogger.logMessage(LOG,"Start -- Load Home Page","",null, 1);
+		String msg = "Start -- Load Home Page";
+		LOG.info(msg);
+		Reporter.log(msg);
+		
+		genFunct.OpenThisUrl(url);
+		verifyText = "MakeMyTrip";
+		genFunct.WaitTillPageLoad(verifyText);
+		//CustomLogger.logMessage(LOG,"End -- Load Home Page",""+url,null, 1);
+		msg = "End -- Load Home Page";
+		LOG.info(msg);
+		Reporter.log(msg);
+		
+	}
+	
+	@Test(description="To Test bus search functionality")
+	public void BusSearchTest()
+	{
+		String email = genFunct.GetSystemParameter("selenium.email");
+		CustomLogger.logMessage(null,"Start -- Bus search","", 1);
+		BusTicketBookingPage btp = new BusTicketBookingPage(wd);		
+		btp.ClickThisWidgetTab("Bus");
+		btp.SelectToAndFrom("Pune", "Nagpur");
+		btp.SelectDateOfJourney(false, "24");
+		btp.EnterEmail(email);
+		btp.SubmitSearch();
+		btp.HandleSpecialSearchPopup();
+		CustomLogger.logMessage(null,"End -- Bus search","", 1);
+	}
+	
+	@Test(description="To Test home page loading within page load time")
+	public void SelectSeatTest()
+	{
+		//SelectBusName("Vrl", "seat1");
+	}
+	
+	@Test//(expectedExceptions = ArithmeticException.class)
+	public void testPrintMessage() {
+		
+		//CustomLogger.logMessage(LOG,"Start -- Print messages","",null, 1);
+		String msg = "Start -- Print messages";
+		LOG.info(msg);
+		Reporter.log(msg);
+        System.out.println("Inside testPrintMessage()");     
+        /*int i = 0;
+        int j = 1/i;*/
+        try {
+			new RemoteCommandExec().ExecuteCmdOnThisHost("localhost", "user", "pwd", "ls");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        LOG.info("Test testPrintMessage executed successfully");
+        LOG.warning("warning");
+        LOG.severe("error");
+		CustomLogger.logMessage(Level.INFO, "End -- Print messages","lkjljkljjlj", 1);
+        //msg = "End -- Print messages";
+		//LOG.info(msg);
+		//Reporter.log(msg);
+        
+	 }
+	
+	
+	
+	//-----------------------------------------------------------
+	
+/*	
+	public void ClickThisPageLink(String tabName)
+	{
+		wd.findElement(By.linkText(tabName)).click();
+	}
+	
+	public void ClickThisWidgetTab(String tabName)
+	{
+		wd.findElement(By.xpath("//div[@class='widget_tabs_info']//span[.='"+tabName+"']")).click();
+       // wd.findElement(By.cssSelector("#trip_type > label")).click();
+       // wd.findElement(By.id("trip_type_oneway")).click();
+	}
+	 
+	public void SelectToAndFrom(String departureCity, String destinationCity)
+	{
+		wd.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		WebElement w1 = wd.findElement(By.xpath("//div[@class='carousel-li']/div[2]/div/div[1]/div[2]/span/input"));
+		Assert.assertTrue(w1.isDisplayed(), "Verify departure city text box is displayed");
+		w1.sendKeys(departureCity);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		w1.sendKeys(Keys.ARROW_DOWN);
+		w1.sendKeys(Keys.ENTER);
+		
+		
+		WebElement w2 =wd.findElement(By.xpath("//div[@class='carousel-li']/div[2]/div/div[1]/div[3]/span/input"));
+		Assert.assertTrue(w2.isDisplayed(), "Verify departure city text box is displayed");
+		w2.sendKeys(destinationCity);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		w2.sendKeys(Keys.ARROW_DOWN);
+		w2.sendKeys(Keys.ENTER);
+		
+		        
+		wd.findElement(By.xpath("//div[@class='carousel-li']/div[2]/div/div[1]/div[2]/span/input")).sendKeys("Pune, India");
+        wd.findElement(By.id("ui-id-172")).click();
+        
+        wd.findElement(By.xpath("//div[@class='carousel-li']/div[2]/div/div[1]/div[3]/span/input")).sendKeys("Nagpur, India");
+        wd.findElement(By.id("ui-id-212")).click();
+	}
+		
+	public void SelectDateOfJourney()
+	{
+		wd.findElement(By.linkText("07Mar'14(Fri)")).click();
+        wd.findElement(By.linkText("8")).click();
+	}
+    
+	public void EnterEmail(String email)
+	{
+        wd.findElement(By.id("email")).sendKeys(email);
+	}   
+     
+	public void SubmitSearch()
+	{
+		wd.findElement(By.name("submit_name")).click();
+	}
+     
+	public void HandleSpecialSearchPopup()
+	{
+        wd.findElement(By.xpath("//div[@id='popBusSearch']//button[normalize-space(.)='Search Bus']")).click();
+        new Actions(wd).doubleClick(wd.findElement(By.xpath("//div[@id='content']/div[5]/div[2]/div"))).build().perform();
+        
+        wd.findElement(By.cssSelector("div.ng-scope")).click();
+        wd.findElement(By.linkText("Select Bus")).click();
+        wd.findElement(By.cssSelector("a.close_popup")).click();
+	}   
+ 
+	public void SelectBusName(String bName, String seatNum)
+	{
+		//wd.findElement(By.xpath("//div[@class='bus_listing']//p[.='"+bName+"']")).click();
+        //wd.findElement(By.xpath("//div[@class='bus_listing']/div[5]/div[20]/div[1]/div[3]/p[1]")).click();
+        wd.findElement(By.xpath("//div[@class='bus_listing']/div[5]/div[2]/div[1]/a")).click();
+        try {
+			Thread.sleep(4000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}							
+        
+        wd.findElement(By.id(seatNum)).click();
+        Assert.assertTrue(wd.findElement(By.cssSelector("a.close_popup")).isDisplayed() , "Verify if the close popup displayed");
+        wd.findElement(By.cssSelector("a.close_popup")).click();
+        try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}	
+	
+	public static boolean isAlertPresent(FirefoxDriver wd) {
+        try {
+            wd.switchTo().alert();
+            return true;
+        } catch (NoAlertPresentException e) {
+            return false;
+        }
+    }
+*/	
+}
